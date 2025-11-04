@@ -1,28 +1,20 @@
-import ProductCard from "./ProductCard";
-import { useMedia } from '../contexts/MediaContext';
-import Carousel from "./Carousel";
+import { useScreen } from "../contexts/ScreenContext";
+import Nav from "./Nav/Nav";
 
 export default function Test() {
-    const { isMobile } = useMedia();
+    const { isMobile } = useScreen();
     return <>
 
-        <div>
+        {/* <div>
             <div className={`${isMobile ? 'text-center' : ''} inline-block`}>
-                {/* <ProductCard />
-                <ProductCard />
-                <ProductCard />
-                <ProductCard />
-                <ProductCard />
-                <ProductCard />
-                <ProductCard />
-                <ProductCard /> */}
+    
 
-
-                <Carousel cards={[<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />,<ProductCard />]}/>
 
             </div>
 
-        </div>
+        </div> */}
+
+            <Nav/>
 
     </>
 }

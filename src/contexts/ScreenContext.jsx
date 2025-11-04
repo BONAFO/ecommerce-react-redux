@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-const MediaContext = createContext();
-export const useMedia = () => useContext(MediaContext)
+const ScreenContext = createContext();
+export const useScreen = () => useContext(ScreenContext)
 
 
 
 
-export default function MediaProvider({ children }) {
+export default function ScreenProvider({ children }) {
     const [isMobile, useMobile] = useState(window.innerHeight > window.innerWidth);
 
     window.onresize = () => {
@@ -14,9 +14,9 @@ export default function MediaProvider({ children }) {
     }
 
 
-    return <MediaContext.Provider value={{
+    return <ScreenContext.Provider value={{
         isMobile
     }}>
         {children}
-    </MediaContext.Provider>
+    </ScreenContext.Provider>
 }
