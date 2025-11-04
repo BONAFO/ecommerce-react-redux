@@ -1,12 +1,13 @@
-import MediaProvider from "./contexts/MediaContext";
+
+import ScreenProvider from "./contexts/ScreenContext";
 import Test from "./test/Test";
 
 export default function App() {
     return <>
 
-       <MediaProvider>
+       <ScreenProvider>
          <Test />
-       </MediaProvider>
+       </ScreenProvider>
 
     </>
 }
