@@ -7,7 +7,7 @@
 
 // }
 
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -16,11 +16,9 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import HomeIcon from '@mui/icons-material/Home';
-import { useScreen } from '../../contexts/ScreenContext';
-import { styled, alpha } from '@mui/material/styles';
-import Input from '@mui/material/Input';
-import { Autocomplete, TextField } from '@mui/material';
-
+import { Autocomplete, Avatar, Container, IconButton, Menu, MenuItem, TextField, Tooltip, Typography } from '@mui/material';
+import { useAuth } from '../../contexts/AuthContext';
+import EmailIcon from '@mui/icons-material/Email';
 
 
 
@@ -28,10 +26,11 @@ import { Autocomplete, TextField } from '@mui/material';
 // import React, { useState, useEffect } from 'react';
 // import { Autocomplete, TextField } from '@mui/material';
 
+// SearchBar Component
 function InputSeach() {
-    const [valor, setValor] = React.useState('');
-    const [opciones, setOpciones] = React.useState([]);
-    const [loading, setLoading] = React.useState(false);
+    const [valor, setValor] = useState('');
+    const [opciones, setOpciones] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // Simula una "consulta a la base de datos"
     const simularQuery = (query) => {
@@ -58,7 +57,7 @@ function InputSeach() {
         });
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (valor.length === 0) {
             setOpciones([]);
             return;
@@ -109,7 +108,68 @@ function InputSeach() {
 
 
 
+// Pages Component
+function NavButton({ page, action }) {
+    return (
+        <Button
+            color='white'
+            sx={{ fontSize: '13px', flexGrow: 1 }}
+            onClick={action}
+        >
+            {page.icon} <span style={{ marginLeft: "10px" }}>{page.txt}</span>
+        </Button>
+    )
 
+}
+
+function UserControls({ settings }) {
+
+    const [anchorElUser, setAnchorElUser] = useState(null);
+    const { token } = useAuth();
+
+    const handleOpenUserMenu = (event) => {
+        setAnchorElUser(event.currentTarget);
+    };
+
+
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
+
+    return (
+        <>
+            <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                </IconButton>
+            </Tooltip>
+            <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+            >
+                {settings.map((setting) => (
+                    token.lv >= setting.lv
+                        ? (<MenuItem key={`${setting.txt}-nav`} onClick={handleCloseUserMenu}>
+                            <Button onClick={setting.action} color='#fff' sx={{ fontSize: "12px", textAlign: 'center' }}>{setting.txt}</Button>
+                        </MenuItem>)
+                        : ""
+                ))}
+            </Menu>
+        </>
+    )
+}
 
 const darkTheme = createTheme({
     palette: {
@@ -122,138 +182,59 @@ const darkTheme = createTheme({
 
 
 
-export default function Nav({ pages }) {
 
+
+
+export default function Nav({ pages, settings }) {
+
+
+    settings = [
+        { txt: 'Mi cuenta', icon: "", action: () => { alert("me fui a Mi cuenta") }, lv: 0, },
+        { txt: 'Mis Compras', icon: "", action: () => { alert("me fui a Mis Compras") }, lv: 0, },
+        { txt: 'Admin de Productos', icon: "", action: () => { alert("me fui a Mis Compras") }, lv: 1, },
+        { txt: 'Admin de Usuarios', icon: "", action: () => { alert("me fui a Mis Compras") }, lv: 1, },
+        { txt: 'Logout', icon: "", action: () => { alert("me fui a Logout") }, lv: 0, },
+    ];
     pages = [
         { txt: 'inicio', icon: <HomeIcon />, action: () => { alert("me fui a inicio") } },
         { txt: 'tienda', icon: <ShoppingCartIcon />, action: () => { alert("me fui a tienda") } },
         { txt: 'ofertas', icon: <LocalOfferIcon />, action: () => { alert("me fui a ofertas") } },
+        { txt: 'contacto', icon: <EmailIcon />, action: () => { alert("me fui a contacto") } },
     ]
 
-
-
-    const [auth, setAuth] = React.useState(true);
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const { isMobile } = useScreen();
-    const [valor, setValor] = React.useState('');
-    const handleChange = (event) => {
-        setAuth(event.target.checked);
-    };
-
-    const handleMenu = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    function NavButton({ page, action }) {
-        return <>
-            <Button
-                color='white'
-                sx={{ fontSize: '13px', flexGrow: 1 }}
-                onClick={action}
-            >
-                {page.icon} <span style={{ marginLeft: "10px" }}>{page.txt}</span>
-            </Button>
-        </>
-    }
+    const { token } = useAuth();
 
 
 
 
 
-    return <>
+
+    return (
         <ThemeProvider theme={darkTheme}>
-            <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static">
+            <AppBar position="static">
+                <Box sx={{ flexGrow: 1 }}>
                     <Toolbar>
-                        {/* <Autocomplete
-                            freeSolo
-                            options={elementos}
-                            inputValue={valor}
-                            sx={{width: "50%"}}
-                            onInputChange={(event, newInputValue) => {
-                                setValor(newInputValue);
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params} label="Buscar fruta" variant="outlined" />
-                            )}
-                        /> */}
-
-                        {/* V1 */}
-                        {/* <Autocomplete
-                            freeSolo
-                            options={elementos}
-                            inputValue={valor}
-                            sx={{ width: '50%' }}
-                            onInputChange={(event, newInputValue) => {
-                                setValor(newInputValue);
-                            }}
-                                 slotProps={{
-                                listbox: {
-                                    style: {
-                                        maxHeight: 200, // Altura máxima del dropdown
-                                        overflowY: 'auto', // Scroll vertical
-                                    },
-                                }
-                            }}
-                            open={valor.length > 0} // Solo abre el dropdown si hay texto
-                            renderInput={(params) => (
-                                <TextField {...params} label="Buscar fruta" variant="outlined" />
-                            )}
-                        /> */}
-
                         <InputSeach />
-                        {/* V1 */}
+                        <Box sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
+                            {
+                                token
+                                    ? (<UserControls settings={settings} />)
 
-
-
-
+                                    : (<>
+                                        <Button color='#fff' >SIGN UP</Button> <Button color='#fff'>LOGIN</Button>
+                                    </>)
+                            }
+                        </Box>
                     </Toolbar>
                     <Toolbar>
                         {pages.map(p => (
                             <NavButton key={`${p.txt}-nav`} action={p.action} page={p}
                             />
                         ))}
-
                     </Toolbar>
 
-
-                    {/* <div>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleMenu}
-                            color="inherit"
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorEl}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                        >
-                            <MenuItem onClick={handleClose}>Profile</MenuItem>
-                            <MenuItem onClick={handleClose}>My account</MenuItem>
-                        </Menu>
-                    </div> */}
-
-                </AppBar>
-            </Box>
+                </Box>
+            </AppBar >
         </ThemeProvider>
-    </>
+    )
 }

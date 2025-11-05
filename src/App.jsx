@@ -1,13 +1,16 @@
 
+import AuthProvider from "./contexts/AuthContext";
 import ScreenProvider from "./contexts/ScreenContext";
 import Test from "./test/Test";
 
 export default function App() {
-    return <>
+  return <>
 
-       <ScreenProvider>
-         <Test />
-       </ScreenProvider>
+    <ScreenProvider>
+      <AuthProvider>
+        <Test />
+      </AuthProvider>
+    </ScreenProvider>
 
-    </>
+  </>
 }
