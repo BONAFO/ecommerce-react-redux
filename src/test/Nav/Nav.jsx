@@ -7,7 +7,7 @@
 
 // }
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -185,56 +185,144 @@ const darkTheme = createTheme({
 
 
 
+// export default function Nav({ pages, settings }) {
+
+
+//     settings = [
+//         { txt: 'Mi cuenta', icon: "", action: () => { alert("me fui a Mi cuenta") }, lv: 0, },
+//         { txt: 'Mis Compras', icon: "", action: () => { alert("me fui a Mis Compras") }, lv: 0, },
+//         { txt: 'Admin de Productos', icon: "", action: () => { alert("me fui a Mis Compras") }, lv: 1, },
+//         { txt: 'Admin de Usuarios', icon: "", action: () => { alert("me fui a Mis Compras") }, lv: 1, },
+//         { txt: 'Logout', icon: "", action: () => { alert("me fui a Logout") }, lv: 0, },
+//     ];
+//     pages = [
+//         { txt: 'inicio', icon: <HomeIcon />, action: () => { alert("me fui a inicio") } },
+//         { txt: 'tienda', icon: <ShoppingCartIcon />, action: () => { alert("me fui a tienda") } },
+//         { txt: 'ofertas', icon: <LocalOfferIcon />, action: () => { alert("me fui a ofertas") } },
+//         { txt: 'contacto', icon: <EmailIcon />, action: () => { alert("me fui a contacto") } },
+//     ]
+
+//     const { token } = useAuth();
+
+
+
+
+
+
+//     return (
+//         <ThemeProvider theme={darkTheme}>
+//             <AppBar position="static">
+//                 <Box sx={{ flexGrow: 1 }}>
+//                     <Toolbar>
+//                         <InputSeach />
+//                         <Box sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
+//                             {
+//                                 token
+//                                     ? (<UserControls settings={settings} />)
+
+//                                     : (<>
+//                                         <Button color='#fff' >SIGN UP</Button> <Button color='#fff'>LOGIN</Button>
+//                                     </>)
+//                             }
+//                         </Box>
+//                     </Toolbar>
+//                     <Toolbar>
+//                         {pages.map(p => (
+//                             <NavButton key={`${p.txt}-nav`} action={p.action} page={p}
+//                             />
+//                         ))}
+//                     </Toolbar>
+
+//                 </Box>
+
+//                 <Box sx={{ position: 'sticky', top: 112, zIndex: 1000, backgroundColor: 'background.default', px: 2, py: 1 }}>
+//                     <InputSeach />
+//                 </Box>
+//             </AppBar >
+//         </ThemeProvider>
+//     )
+// }
+
+
+
+
 export default function Nav({ pages, settings }) {
+  const { token } = useAuth();
+  const searchRef = useRef(null);
+  const [showStickySearch, setShowStickySearch] = useState(false);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowStickySearch(!entry.isIntersecting);
+      },
+      { threshold: 0.01 }
+    );
 
-    settings = [
-        { txt: 'Mi cuenta', icon: "", action: () => { alert("me fui a Mi cuenta") }, lv: 0, },
-        { txt: 'Mis Compras', icon: "", action: () => { alert("me fui a Mis Compras") }, lv: 0, },
-        { txt: 'Admin de Productos', icon: "", action: () => { alert("me fui a Mis Compras") }, lv: 1, },
-        { txt: 'Admin de Usuarios', icon: "", action: () => { alert("me fui a Mis Compras") }, lv: 1, },
-        { txt: 'Logout', icon: "", action: () => { alert("me fui a Logout") }, lv: 0, },
-    ];
-    pages = [
-        { txt: 'inicio', icon: <HomeIcon />, action: () => { alert("me fui a inicio") } },
-        { txt: 'tienda', icon: <ShoppingCartIcon />, action: () => { alert("me fui a tienda") } },
-        { txt: 'ofertas', icon: <LocalOfferIcon />, action: () => { alert("me fui a ofertas") } },
-        { txt: 'contacto', icon: <EmailIcon />, action: () => { alert("me fui a contacto") } },
-    ]
+    if (searchRef.current) {
+      observer.observe(searchRef.current);
+    }
 
-    const { token } = useAuth();
+    return () => {
+      if (searchRef.current) observer.unobserve(searchRef.current);
+    };
+  }, []);
 
+  settings = [
+    { txt: 'Mi cuenta', icon: "", action: () => alert("me fui a Mi cuenta"), lv: 0 },
+    { txt: 'Mis Compras', icon: "", action: () => alert("me fui a Mis Compras"), lv: 0 },
+    { txt: 'Admin de Productos', icon: "", action: () => alert("me fui a Mis Compras"), lv: 1 },
+    { txt: 'Admin de Usuarios', icon: "", action: () => alert("me fui a Mis Compras"), lv: 1 },
+    { txt: 'Logout', icon: "", action: () => alert("me fui a Logout"), lv: 0 },
+  ];
 
+  pages = [
+    { txt: 'inicio', icon: <HomeIcon />, action: () => alert("me fui a inicio") },
+    { txt: 'tienda', icon: <ShoppingCartIcon />, action: () => alert("me fui a tienda") },
+    { txt: 'ofertas', icon: <LocalOfferIcon />, action: () => alert("me fui a ofertas") },
+    { txt: 'contacto', icon: <EmailIcon />, action: () => alert("me fui a contacto") },
+  ];
 
+  return (
+    <ThemeProvider theme={darkTheme}>
+      <AppBar position="static">
+        <Box sx={{ flexGrow: 1 }}>
+          <Toolbar ref={searchRef}>
+            <InputSeach />
+            <Box sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
+              {token ? (
+                <UserControls settings={settings} />
+              ) : (
+                <>
+                  <Button color="#fff">SIGN UP</Button>
+                  <Button color="#fff">LOGIN</Button>
+                </>
+              )}
+            </Box>
+          </Toolbar>
+          <Toolbar>
+            {pages.map((p) => (
+              <NavButton key={`${p.txt}-nav`} action={p.action} page={p} />
+            ))}
+          </Toolbar>
+        </Box>
+      </AppBar>
 
-
-
-    return (
-        <ThemeProvider theme={darkTheme}>
-            <AppBar position="static">
-                <Box sx={{ flexGrow: 1 }}>
-                    <Toolbar>
-                        <InputSeach />
-                        <Box sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
-                            {
-                                token
-                                    ? (<UserControls settings={settings} />)
-
-                                    : (<>
-                                        <Button color='#fff' >SIGN UP</Button> <Button color='#fff'>LOGIN</Button>
-                                    </>)
-                            }
-                        </Box>
-                    </Toolbar>
-                    <Toolbar>
-                        {pages.map(p => (
-                            <NavButton key={`${p.txt}-nav`} action={p.action} page={p}
-                            />
-                        ))}
-                    </Toolbar>
-
-                </Box>
-            </AppBar >
-        </ThemeProvider>
-    )
+      {showStickySearch && (
+        <Box
+          sx={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 1000,
+            backgroundColor: 'var(--bs-body-color)',
+            px: 2,
+            py: 1,
+            boxShadow: 1,
+          }}
+        >
+          <InputSeach />
+        </Box>
+      )}
+    </ThemeProvider>
+  );
 }
